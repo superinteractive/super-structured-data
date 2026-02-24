@@ -1,0 +1,51 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Schemas;
+
+use Spatie\SchemaOrg\BaseType;
+use Spatie\SchemaOrg\Schema;
+use Superinteractive\StructuredData\Schemas\BaseSchema;
+
+class HomepageWebsiteSchema extends BaseSchema
+{
+    public function applies(): bool
+    {
+        return $this->context->collection() === 'pages' && $this->context->blueprint() === 'home';
+    }
+
+    /**
+     * @return array<int, BaseType>
+     */
+    public function buildSchemas(): array
+    {
+        $schema = Schema::webSite()
+            ->id($this->context->url().'#website')
+            ->url($this->context->url())
+            ->name((string) config('app.name', 'Website'));
+
+        $locale = $this->context->locale();
+
+        if (is_string($locale) && $locale !== '') {
+            $schema->inLanguage($locale);
+        }
+
+        return [$schema];
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public function scripts(): array
+    {
+        if (! $this->applies()) {
+            return [];
+        }
+
+        return array_map(
+            static fn (BaseType $schema): string => $schema->toScript(),
+            $this->buildSchemas(),
+        );
+    }
+}

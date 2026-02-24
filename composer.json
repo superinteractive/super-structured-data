@@ -1,0 +1,58 @@
+{
+    "name": "superinteractive/super-structured-data",
+    "description": "Structured data schema orchestration for Laravel with optional Statamic support.",
+    "type": "library",
+    "keywords": [
+        "laravel",
+        "structured-data",
+        "json-ld",
+        "schema-org",
+        "statamic"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": "^8.4",
+        "illuminate/console": "^12.0",
+        "illuminate/contracts": "^12.0",
+        "illuminate/support": "^12.0",
+        "illuminate/view": "^12.0",
+        "spatie/schema-org": "^3.23"
+    },
+    "suggest": {
+        "statamic/cms": "Optional: enables Statamic-specific schema context and factory support"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.24",
+        "mockery/mockery": "^1.6",
+        "orchestra/testbench": "^10.0",
+        "pestphp/pest": "^3.8",
+        "phpunit/phpunit": "^11.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Superinteractive\\StructuredData\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Superinteractive\\StructuredData\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/pest",
+        "format": "vendor/bin/pint"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Superinteractive\\StructuredData\\StructuredDataServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}

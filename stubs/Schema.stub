@@ -1,0 +1,23 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Superinteractive\StructuredData\Schemas\BaseSchema;
+
+class {{ class }} extends BaseSchema
+{
+    public function applies(): bool
+    {
+        return false;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public function scripts(): array
+    {
+        return [];
+    }
+}
