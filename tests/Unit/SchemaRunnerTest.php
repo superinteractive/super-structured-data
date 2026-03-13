@@ -3,8 +3,87 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\File;
-use Superinteractive\StructuredData\Contexts\LaravelSchemaContext;
+use Superinteractive\StructuredData\Contexts\LaravelContext;
 use Superinteractive\StructuredData\Support\SchemaRunner;
+
+it('skips schemas whose required context type does not match the resolved context', function (): void {
+    $schemaPath = 'Schemas/RunnerContextTypes';
+    $directory = app_path($schemaPath);
+    $appNamespace = mb_rtrim(app()->getNamespace(), '\\');
+    $schemaNamespace = $appNamespace.'\\Schemas\\RunnerContextTypes';
+
+    File::deleteDirectory($directory);
+    File::ensureDirectoryExists($directory);
+
+    try {
+        File::put($directory.'/ACompatibleSchema.php', <<<PHP
+<?php
+
+declare(strict_types=1);
+
+namespace {$schemaNamespace};
+
+use Spatie\SchemaOrg\Schema;
+use Superinteractive\StructuredData\Schemas\BaseSchema;
+
+class ACompatibleSchema extends BaseSchema
+{
+    public function applies(): bool
+    {
+        return true;
+    }
+
+    public function scripts(): array
+    {
+        return [Schema::webSite()->name('compatible')->toScript()];
+    }
+}
+PHP);
+
+        File::put($directory.'/BIncompatibleStatamicSchema.php', <<<PHP
+<?php
+
+declare(strict_types=1);
+
+namespace {$schemaNamespace};
+
+use Spatie\SchemaOrg\Schema;
+use Superinteractive\StructuredData\Schemas\StatamicSchema;
+
+class BIncompatibleStatamicSchema extends StatamicSchema
+{
+    public function applies(): bool
+    {
+        return true;
+    }
+
+    public function scripts(): array
+    {
+        return [Schema::webSite()->name('incompatible')->toScript()];
+    }
+}
+PHP);
+
+        require_once $directory.'/ACompatibleSchema.php';
+        require_once $directory.'/BIncompatibleStatamicSchema.php';
+
+        config()->set('structured-data.schema_path', $schemaPath);
+
+        $runner = app(SchemaRunner::class);
+
+        $scripts = $runner->scripts(new LaravelContext(
+            routeName: 'home',
+            url: 'https://example.test',
+            locale: 'en',
+        ));
+
+        expect($scripts)->toHaveCount(1)
+            ->and($scripts[0])->toContain('"name":"compatible"')
+            ->and($scripts[0])->not->toContain('"name":"incompatible"');
+    } finally {
+        File::deleteDirectory($directory);
+    }
+});
 
 it('returns scripts for applicable schemas in discovered order', function (): void {
     $schemaPath = 'Schemas/Runner';
@@ -96,10 +175,8 @@ PHP);
 
         $runner = app(SchemaRunner::class);
 
-        $scripts = $runner->scripts(new LaravelSchemaContext(
+        $scripts = $runner->scripts(new LaravelContext(
             routeName: 'home',
-            collection: 'pages',
-            blueprint: 'home',
             url: 'https://example.test',
             locale: 'en',
         ));
@@ -152,10 +229,8 @@ PHP);
 
         $runner = app(SchemaRunner::class);
 
-        $scripts = $runner->scripts(new LaravelSchemaContext(
+        $scripts = $runner->scripts(new LaravelContext(
             routeName: 'home',
-            collection: 'pages',
-            blueprint: 'home',
             url: 'https://example.test',
             locale: 'en',
         ));

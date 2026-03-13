@@ -8,15 +8,14 @@ interface SchemaContextContract
 {
     public function routeName(): ?string;
 
-    public function collection(): ?string;
-
-    public function blueprint(): ?string;
-
     public function url(): string;
 
     public function locale(): ?string;
 
-    public function entry(): mixed;
+    /**
+     * @return array<string, mixed>
+     */
+    public function routeParams(): array;
 
-    public function page(): mixed;
+    public function routeParam(string $key, mixed $default = null): mixed;
 }

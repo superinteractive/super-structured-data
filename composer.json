@@ -1,5 +1,6 @@
 {
     "name": "superinteractive/super-structured-data",
+    "version": "0.2.0",
     "description": "Structured data schema orchestration for Laravel with optional Statamic support.",
     "type": "library",
     "keywords": [

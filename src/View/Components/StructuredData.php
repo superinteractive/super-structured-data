@@ -12,14 +12,9 @@ use Superinteractive\StructuredData\Support\SchemaRunner;
 
 class StructuredData extends Component
 {
-    /**
-     * @param  array<int, mixed>  $breadcrumbs
-     */
     public function __construct(
         private readonly ContextFactoryResolver $contextFactoryResolver,
         private readonly SchemaRunner $schemaRunner,
-        public mixed $entry = null,
-        public array $breadcrumbs = [],
     ) {}
 
     public function render(): View|Closure|string
@@ -28,7 +23,7 @@ class StructuredData extends Component
             return view('structured-data::components.structured-data', ['scripts' => []]);
         }
 
-        $context = $this->contextFactoryResolver->make($this->entry);
+        $context = $this->contextFactoryResolver->make();
         $scripts = $this->schemaRunner->scripts($context);
 
         return view('structured-data::components.structured-data', ['scripts' => $scripts]);

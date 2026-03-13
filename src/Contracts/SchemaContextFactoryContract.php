@@ -6,5 +6,5 @@ namespace Superinteractive\StructuredData\Contracts;
 
 interface SchemaContextFactoryContract
 {
-    public function make(mixed $entry = null): SchemaContextContract;
+    public function make(): SchemaContextContract;
 }

@@ -1,0 +1,28 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Superinteractive\StructuredData\Schemas\ModelSchema;
+
+class {{ class }} extends ModelSchema
+{
+    protected function routeModelKey(): string
+    {
+        return ''; // e.g. 'product' for /products/{product}
+    }
+
+    public function applies(): bool
+    {
+        return false; // e.g. $this->model() instanceof \App\Models\Product
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public function scripts(): array
+    {
+        return [];
+    }
+}

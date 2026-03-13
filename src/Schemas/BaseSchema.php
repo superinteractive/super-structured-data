@@ -9,21 +9,24 @@ use Superinteractive\StructuredData\Contracts\SchemaContextContract;
 /**
  * Base class for all Structured Data schema definitions.
  *
- * Instructions for LLMs and AI coding tools:
- * - Always extend this class for new schema implementations.
- * - Use only `$this->context` to decide whether a schema applies to the
- *   current request/page (`routeName`, `collection`, `blueprint`, `url`,
- *   `locale`, `entry`, `page`).
- * - Keep matching logic inside the concrete schema class (`applies()`).
- * - Keep each concrete schema focused on a single schema concern.
- * - Return deterministic script arrays from `scripts()`.
- * - Avoid side effects inside schema classes.
+ * Extend this class directly for schemas that only need route-level
+ * context (routeName, url, locale, routeParams). For schemas that
+ * need a route-bound model, extend ModelSchema instead. For Statamic
+ * schemas, extend StatamicSchema.
  */
 abstract class BaseSchema
 {
     public function __construct(
         protected readonly SchemaContextContract $context,
     ) {}
+
+    /**
+     * @return class-string<SchemaContextContract>
+     */
+    public static function contextType(): string
+    {
+        return SchemaContextContract::class;
+    }
 
     abstract public function applies(): bool;
 

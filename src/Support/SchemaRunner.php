@@ -22,6 +22,12 @@ class SchemaRunner
         $scripts = [];
 
         foreach ($this->schemaClassResolver->classes() as $schemaClass) {
+            $requiredContext = $schemaClass::contextType();
+
+            if (! $context instanceof $requiredContext) {
+                continue;
+            }
+
             $schema = $this->container->make($schemaClass, ['context' => $context]);
 
             if (! $schema->applies()) {

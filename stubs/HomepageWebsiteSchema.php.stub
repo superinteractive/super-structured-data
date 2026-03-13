@@ -6,9 +6,9 @@ namespace App\Schemas;
 
 use Spatie\SchemaOrg\BaseType;
 use Spatie\SchemaOrg\Schema;
-use Superinteractive\StructuredData\Schemas\BaseSchema;
+use Superinteractive\StructuredData\Schemas\StatamicSchema;
 
-class HomepageWebsiteSchema extends BaseSchema
+class HomepageWebsiteSchema extends StatamicSchema
 {
     public function applies(): bool
     {
