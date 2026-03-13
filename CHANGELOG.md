@@ -2,7 +2,7 @@
 
 All notable changes to this package will be documented in this file.
 
-## 0.2.0 - 2026-03-13
+## 2.0.0 - 2026-03-13
 
 ### Breaking
 
