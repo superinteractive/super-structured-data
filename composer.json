@@ -17,7 +17,7 @@
         "illuminate/contracts": "^12.0",
         "illuminate/support": "^12.0",
         "illuminate/view": "^12.0",
-        "spatie/schema-org": "^3.23"
+        "spatie/schema-org": "^3.23 || ^4.0"
     },
     "suggest": {
         "statamic/cms": "Optional: enables Statamic-specific schema context and factory support"
