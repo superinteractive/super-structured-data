@@ -47,13 +47,13 @@ class MakeSchemaCommand extends GeneratorCommand
             $schemaPath = 'Schemas';
         }
 
-        $namespaceSuffix = str_replace(['/', '\\'], '\\', mb_trim($schemaPath, '/\\'));
+        $namespaceSuffix = str_replace(['/', '\\'], '\\', trim($schemaPath, '/\\'));
 
         if ($namespaceSuffix === '') {
-            return mb_rtrim((string) $rootNamespace, '\\');
+            return rtrim((string) $rootNamespace, '\\');
         }
 
-        return mb_rtrim((string) $rootNamespace, '\\').'\\'.$namespaceSuffix;
+        return rtrim((string) $rootNamespace, '\\').'\\'.$namespaceSuffix;
     }
 
     protected function qualifyClass($name): string

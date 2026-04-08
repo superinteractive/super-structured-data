@@ -43,3 +43,7 @@ it('registers the make schema command', function (): void {
     expect($commands)->toHaveKey('make:schema')
         ->and($commands['make:schema'])->toBeInstanceOf(MakeSchemaCommand::class);
 });
+
+it('registers the structured-data view namespace', function (): void {
+    expect(view()->exists('structured-data::components.structured-data'))->toBeTrue();
+});

@@ -85,7 +85,7 @@ class StructuredDataServiceProvider extends ServiceProvider
             $schemaPath = 'Schemas';
         }
 
-        $schemaPath = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, mb_trim($schemaPath, '/\\'));
+        $schemaPath = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, trim($schemaPath, '/\\'));
 
         if ($schemaPath === '') {
             return app_path();

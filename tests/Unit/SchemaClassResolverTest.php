@@ -6,9 +6,9 @@ use Illuminate\Support\Facades\File;
 use Superinteractive\StructuredData\Support\SchemaClassResolver;
 
 it('discovers schema classes from configured schema path and filters non-schema classes', function (): void {
-    $schemaPath = 'Schemas/Resolver';
-    $directory = app_path($schemaPath);
-    $appNamespace = mb_rtrim(app()->getNamespace(), '\\');
+    $schemaPath = '/Schemas/Resolver\\';
+    $directory = app_path('Schemas/Resolver');
+    $appNamespace = rtrim(app()->getNamespace(), '\\');
     $schemaNamespace = $appNamespace.'\\Schemas\\Resolver';
 
     File::deleteDirectory($directory);

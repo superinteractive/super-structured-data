@@ -9,7 +9,7 @@ use Superinteractive\StructuredData\Support\SchemaRunner;
 it('skips schemas whose required context type does not match the resolved context', function (): void {
     $schemaPath = 'Schemas/RunnerContextTypes';
     $directory = app_path($schemaPath);
-    $appNamespace = mb_rtrim(app()->getNamespace(), '\\');
+    $appNamespace = rtrim(app()->getNamespace(), '\\');
     $schemaNamespace = $appNamespace.'\\Schemas\\RunnerContextTypes';
 
     File::deleteDirectory($directory);
@@ -88,7 +88,7 @@ PHP);
 it('returns scripts for applicable schemas in discovered order', function (): void {
     $schemaPath = 'Schemas/Runner';
     $directory = app_path($schemaPath);
-    $appNamespace = mb_rtrim(app()->getNamespace(), '\\');
+    $appNamespace = rtrim(app()->getNamespace(), '\\');
     $schemaNamespace = $appNamespace.'\\Schemas\\Runner';
 
     File::deleteDirectory($directory);
@@ -192,7 +192,7 @@ PHP);
 it('sanitizes script-tag breakout payloads in schema scripts', function (): void {
     $schemaPath = 'Schemas/Security';
     $directory = app_path($schemaPath);
-    $appNamespace = mb_rtrim(app()->getNamespace(), '\\');
+    $appNamespace = rtrim(app()->getNamespace(), '\\');
     $schemaNamespace = $appNamespace.'\\Schemas\\Security';
 
     File::deleteDirectory($directory);
@@ -239,6 +239,55 @@ PHP);
             ->and($scripts[0])->not->toContain('</script><script>alert(1)</script>')
             ->and($scripts[0])->not->toContain('</script><script>')
             ->and($scripts[0])->toContain('\u003C/script\u003E\u003Cscript\u003Ealert(1)\u003C/script\u003E');
+    } finally {
+        File::deleteDirectory($directory);
+    }
+});
+
+it('sanitizes script payloads that include surrounding whitespace', function (): void {
+    $schemaPath = 'Schemas/SecurityWhitespace';
+    $directory = app_path($schemaPath);
+    $schemaNamespace = rtrim(app()->getNamespace(), '\\').'\\Schemas\\SecurityWhitespace';
+
+    File::deleteDirectory($directory);
+    File::ensureDirectoryExists($directory);
+
+    try {
+        File::put($directory.'/WhitespaceSchema.php', <<<PHP
+<?php
+
+declare(strict_types=1);
+
+namespace {$schemaNamespace};
+
+use Superinteractive\StructuredData\Schemas\BaseSchema;
+
+class WhitespaceSchema extends BaseSchema
+{
+    public function applies(): bool
+    {
+        return true;
+    }
+
+    public function scripts(): array
+    {
+        return ['<script type="application/ld+json">'."\n".'  {"name":"trimmed"}'."\n".'</script>'];
+    }
+}
+PHP);
+
+        require_once $directory.'/WhitespaceSchema.php';
+
+        config()->set('structured-data.schema_path', $schemaPath);
+
+        $runner = app(SchemaRunner::class);
+        $scripts = $runner->scripts(new LaravelContext(
+            routeName: 'home',
+            url: 'https://example.test',
+            locale: 'en',
+        ));
+
+        expect($scripts[0])->toContain('"name":"trimmed"');
     } finally {
         File::deleteDirectory($directory);
     }

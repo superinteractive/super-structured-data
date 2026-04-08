@@ -41,25 +41,18 @@ class SchemaClassResolver
     private function discoverSchemaClasses(): array
     {
         $schemaPath = (string) config('structured-data.schema_path', 'Schemas');
-        $schemaDirectory = app_path($schemaPath);
+        $normalizedSchemaPath = trim($schemaPath, '/\\');
+        $schemaDirectory = app_path($normalizedSchemaPath);
 
         if (! is_dir($schemaDirectory)) {
             return [];
         }
 
-        $namespace = app()->getNamespace().str_replace(['/', '\\'], '\\', mb_trim($schemaPath, '/\\'));
+        $namespace = app()->getNamespace().str_replace(['/', '\\'], '\\', $normalizedSchemaPath);
         $schemaClasses = [];
 
         foreach (File::allFiles($schemaDirectory) as $file) {
-            $relativePath = str_replace($schemaDirectory, '', $file->getPathname());
-
-            if (function_exists('mb_ltrim')) {
-                $relativePath = mb_ltrim($relativePath, DIRECTORY_SEPARATOR);
-            } else {
-                while (str_starts_with($relativePath, DIRECTORY_SEPARATOR)) {
-                    $relativePath = mb_substr($relativePath, 1);
-                }
-            }
+            $relativePath = ltrim(str_replace($schemaDirectory, '', $file->getPathname()), DIRECTORY_SEPARATOR);
 
             $class = $namespace.'\\'.str_replace([DIRECTORY_SEPARATOR, '.php'], ['\\', ''], $relativePath);
             $schemaClasses[] = $class;

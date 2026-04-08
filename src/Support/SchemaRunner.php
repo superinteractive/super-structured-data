@@ -52,7 +52,7 @@ class SchemaRunner
             return $script;
         }
 
-        $decoded = json_decode(mb_trim($matches[2]), associative: true);
+        $decoded = json_decode(trim($matches[2]), associative: true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             return $script;

@@ -5,22 +5,79 @@ on:
   pull_request:
 
 jobs:
-  tests:
+  quality:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
           tools: composer:v2
+      - run: composer update --with-all-dependencies --prefer-dist --no-interaction
+      - run: composer validate --strict
+      - run: vendor/bin/pint --test
 
-      - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '8.3'
+            illuminate: '^12.0'
+            testbench: '^10.11'
+          - php: '8.3'
+            illuminate: '^13.0'
+            testbench: '^11.0'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: composer:v2
+      - name: Resolve matrix dependencies
+        run: >
+          composer update
+          "illuminate/console:${{ matrix.illuminate }}"
+          "illuminate/contracts:${{ matrix.illuminate }}"
+          "illuminate/support:${{ matrix.illuminate }}"
+          "illuminate/view:${{ matrix.illuminate }}"
+          "orchestra/testbench:${{ matrix.testbench }}"
+          --with-all-dependencies
+          --prefer-dist
+          --no-interaction
+      - run: composer test
 
-      - name: Run tests
-        run: composer test
-
-      - name: Run Pint
-        run: vendor/bin/pint --test
+  statamic-smoke:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '8.4'
+            illuminate: '^12.0'
+            testbench: '^10.11'
+            statamic: '^5.0'
+          - php: '8.3'
+            illuminate: '^12.0'
+            testbench: '^10.11'
+            statamic: '^6.0'
+          - php: '8.3'
+            illuminate: '^13.0'
+            testbench: '^11.0'
+            statamic: '^6.0'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: composer:v2
+      - name: Install Statamic matrix dependencies
+        run: >
+          composer require --dev
+          "orchestra/testbench:${{ matrix.testbench }}"
+          "statamic/cms:${{ matrix.statamic }}"
+          --with-all-dependencies
+          --prefer-dist
+          --no-interaction
+      - run: vendor/bin/pest tests/Feature/StatamicCompatibilityTest.php -v

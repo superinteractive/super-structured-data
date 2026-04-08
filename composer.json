@@ -1,6 +1,5 @@
 {
     "name": "superinteractive/super-structured-data",
-    "version": "2.0.0",
     "description": "Structured data schema orchestration for Laravel with optional Statamic support.",
     "type": "library",
     "keywords": [
@@ -12,11 +11,11 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.4",
-        "illuminate/console": "^12.0",
-        "illuminate/contracts": "^12.0",
-        "illuminate/support": "^12.0",
-        "illuminate/view": "^12.0",
+        "php": "^8.3",
+        "illuminate/console": "^12.0 || ^13.0",
+        "illuminate/contracts": "^12.0 || ^13.0",
+        "illuminate/support": "^12.0 || ^13.0",
+        "illuminate/view": "^12.0 || ^13.0",
         "spatie/schema-org": "^3.23"
     },
     "suggest": {
@@ -25,9 +24,9 @@
     "require-dev": {
         "laravel/pint": "^1.24",
         "mockery/mockery": "^1.6",
-        "orchestra/testbench": "^10.0",
-        "pestphp/pest": "^3.8",
-        "phpunit/phpunit": "^11.5"
+        "orchestra/testbench": "^10.11 || ^11.0",
+        "pestphp/pest": "^4.0",
+        "phpunit/phpunit": "^12.5"
     },
     "autoload": {
         "psr-4": {
@@ -53,6 +52,7 @@
     "config": {
         "sort-packages": true,
         "allow-plugins": {
+            "pixelfear/composer-dist-plugin": true,
             "pestphp/pest-plugin": true
         }
     }

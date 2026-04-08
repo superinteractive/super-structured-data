@@ -225,6 +225,8 @@ Run package tests:
 composer test
 ```
 
+The committed `composer.lock` tracks the newest supported stack by default. CI separately resolves Laravel 12 / Testbench 10 and Laravel 13 / Testbench 11 to prove the wider support range.
+
 Format package code:
 
 ```bash
@@ -233,6 +235,6 @@ vendor/bin/pint
 
 ## Support Matrix
 
-- PHP: 8.4+
-- Laravel: 12+
-- Statamic: optional
+- PHP: 8.3+
+- Laravel: 12.x, 13.x
+- Statamic: 5.x on Laravel 12, 6.x on Laravel 12-13

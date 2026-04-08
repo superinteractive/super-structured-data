@@ -2,6 +2,19 @@
 
 All notable changes to this package will be documented in this file.
 
+## Unreleased
+
+### Changed
+
+- Added Laravel 13 compatibility.
+- Lowered the minimum supported PHP version to 8.3.
+- Expanded CI to validate Laravel 12 and 13.
+
+### Testing
+
+- Added Blade rendering smoke coverage.
+- Added optional Statamic smoke coverage.
+
 ## 2.0.0 - 2026-03-13
 
 ### Breaking

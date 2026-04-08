@@ -70,7 +70,7 @@ it('returns null model when route param is missing', function (): void {
 });
 
 it('caches model resolution across multiple calls', function (): void {
-    $context = \Mockery::mock(SchemaContextContract::class);
+    $context = Mockery::mock(SchemaContextContract::class);
     $context->shouldReceive('routeParam')
         ->with('item', null)
         ->once()
