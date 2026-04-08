@@ -2,13 +2,14 @@
 
 All notable changes to this package will be documented in this file.
 
-## Unreleased
+## 2.1.1 - 2026-04-08
 
 ### Changed
 
 - Added Laravel 13 compatibility.
 - Lowered the minimum supported PHP version to 8.3.
 - Expanded CI to validate Laravel 12 and 13.
+- Bumped `spatie/schema-org` to 4.0.0.
 
 ### Testing
 
