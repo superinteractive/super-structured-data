@@ -2,6 +2,12 @@
 
 All notable changes to this package will be documented in this file.
 
+## Unreleased
+
+### Fixed
+
+- Fixed Statamic multisite context resolution when the public URL includes the current site's configured URL prefix.
+
 ## 2.1.1 - 2026-04-08
 
 ### Changed

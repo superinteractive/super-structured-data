@@ -124,7 +124,7 @@ class StatamicSchemaContextFactory implements SchemaContextFactoryContract
     /**
      * Auto-resolution chain:
      * 1. Route-bound Entry or Page (from implicit model binding)
-     * 2. Entry::findByUri() using current request URI
+     * 2. Entry::findByUri() using current request URI candidates
      * 3. null (non-content routes)
      */
     private function resolveSource(Request $request): EntryContract|Page|null
@@ -135,11 +135,94 @@ class StatamicSchemaContextFactory implements SchemaContextFactoryContract
             }
         }
 
-        $uri = '/'.ltrim($request->path(), '/');
-        $site = Site::current()?->handle();
-        $entry = EntryFacade::findByUri($uri === '//' ? '/' : $uri, $site);
+        $site = Site::current();
+        $siteHandle = $this->resolveSiteHandle($site);
 
-        return $entry instanceof EntryContract ? $entry : null;
+        foreach ($this->requestUriCandidates($request, $site) as $uri) {
+            $source = EntryFacade::findByUri($uri, $siteHandle);
+
+            if ($source instanceof Page || $source instanceof EntryContract) {
+                return $source;
+            }
+        }
+
+        return null;
+    }
+
+    private function resolveSiteHandle(mixed $site): ?string
+    {
+        if (! is_object($site) || ! method_exists($site, 'handle')) {
+            return null;
+        }
+
+        $handle = rescue(fn (): mixed => $site->handle(), report: false);
+
+        return is_string($handle) && $handle !== '' ? $handle : null;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function requestUriCandidates(Request $request, mixed $site): array
+    {
+        $uri = $this->normalizeUri('/'.ltrim($request->path(), '/'));
+        $candidates = [$uri];
+
+        foreach ($this->sitePathPrefixes($site) as $prefix) {
+            if ($uri === $prefix) {
+                $candidates[] = '/';
+
+                continue;
+            }
+
+            if (str_starts_with($uri, $prefix.'/')) {
+                $candidates[] = $this->normalizeUri(substr($uri, strlen($prefix)));
+            }
+        }
+
+        return array_values(array_unique($candidates));
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function sitePathPrefixes(mixed $site): array
+    {
+        if (! is_object($site)) {
+            return [];
+        }
+
+        $prefixes = [];
+
+        foreach (['url', 'absoluteUrl'] as $method) {
+            if (! method_exists($site, $method)) {
+                continue;
+            }
+
+            $siteUrl = rescue(fn (): mixed => $site->{$method}(), report: false);
+
+            if (! is_string($siteUrl) || $siteUrl === '') {
+                continue;
+            }
+
+            $sitePath = parse_url($siteUrl, PHP_URL_PATH);
+
+            if (! is_string($sitePath) || trim($sitePath, '/') === '') {
+                continue;
+            }
+
+            $prefixes[] = '/'.trim($sitePath, '/');
+        }
+
+        return array_values(array_unique($prefixes));
+    }
+
+    private function normalizeUri(string $uri): string
+    {
+        $uri = '/'.ltrim($uri, '/');
+        $uri = rtrim($uri, '/');
+
+        return $uri === '' ? '/' : $uri;
     }
 
     private function resolveEntry(EntryContract|Page|null $source): ?EntryContract
